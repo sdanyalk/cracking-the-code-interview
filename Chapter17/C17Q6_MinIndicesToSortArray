@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+/*
+ * Given an array of integers, write a method to find indices m and n such that if you sorted elements m through n,
+ * the entire array would be sorted. Minimize n - m (that is, find the smallest such sequence).
+ * EXAMPLE 
+ * Input: 1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19
+ * Output: (3, 9)
+ */
+namespace CrackingTheCodeInterview.Chapter17
+{
+    class C17Q6_MinIndicesToSortArray
+    {
+        static void Main(string[] args)
+        {
+            int[] inputArray = new int[] { 1, 2, 4, 7, 10, 11, 7, 12, 6, 7, 16, 18, 19 };
+
+            int endLeft = getEndOfLeftSubArray(inputArray);
+            int startRight = getStartOfRightSubArray(inputArray);
+
+            if (endLeft == -1)
+            {
+                Console.WriteLine("Input array is already sorted.");
+                return;
+            }
+
+            int minIndex = startRight;
+            int maxIndex = endLeft;
+
+            /* Re-calculate the max and min index using the array elements from the middle array.
+             */
+            for (int i = endLeft; i <= startRight; i++)
+            {
+                if (inputArray[i] > maxIndex)
+                    maxIndex = i;
+                if (inputArray[i] < minIndex)
+                    minIndex = i;
+            }
+
+            int m = locateIndexM(inputArray, minIndex, endLeft);
+            int n = locateIndexN(inputArray, maxIndex, startRight);
+
+            Console.WriteLine("(" + m + ", " + n + ")");
+            Console.Read();
+        }
+
+        /* Find the index where the ascending order from the start of the array ends.
+         */
+        static int getEndOfLeftSubArray(int[] intArray)
+        {
+            for (int i = 0; i < intArray.Length - 1; i++)
+            {
+                if (intArray[i] > intArray[i + 1])
+                    return i;
+            }
+
+            return -1;
+        }
+
+        /* Find the index where descending order the array from the end ends.
+         */
+        static int getStartOfRightSubArray(int[] intArray)
+        {
+            for (int i = intArray.Length - 1; i > 0; i--)
+            {
+                if (intArray[i] < intArray[i - 1])
+                    return i;
+            }
+
+            return -1;
+        }
+
+        /* All the elements in the left sub-array should be greater than the minIndex element. Find the elemet that is less than the minIndex element
+         * and that will be index m.
+         */
+        static int locateIndexM(int[] intArray, int minIndex, int endLeftIndex)
+        {
+            for (int i = endLeftIndex; i >= 0; i--)
+            {
+                if (intArray[i] < minIndex)
+                    return i + 1;
+            }
+
+            return -1;
+        }
+
+        /* All the elements in the right sub-array should be less than the maxIndex element. Find the element that is greater than the maxIndex element
+         * and that will be index n.
+         */
+        static int locateIndexN(int[] intArray, int maxIndex, int startRightIndex)
+        {
+            for (int i = startRightIndex; i < intArray.Length; i++)
+            {
+                if (intArray[i] > maxIndex)
+                    return i - 1;
+            }
+
+            return -1;
+        }
+    }
+}
